@@ -81,11 +81,14 @@ def dis_right_2 (A : PropForm) : BNTree Sequent → Option (BNTree Sequent)
   | _ => none
 
 def con_right : BNTree Sequent → BNTree Sequent → Option (BNTree Sequent)
-  | T₁@(node _ (Γ, A::Δ) _), T₂@(node _ (Γ', B::Δ') _) =>
-    if Γ = Γ' ∧ Δ = Δ' then
-      node T₁ (Γ, (A ∧ₚ B)::Δ) T₂
-    else
-      none
+  | T₁@(node _ (Γ, Δ) _), T₂@(node _ (Γ', Δ') _) =>
+    match Δ.reverse, Δ'.reverse with
+    | A :: Δ₁, B :: Δ₂ =>
+      if Γ = Γ' ∧ Δ₁ = Δ₂ then
+        node T₁ (Γ, Δ₁.reverse ++ [A ∧ₚ B]) T₂
+      else
+        none
+    | _, _ => none
   | _, _ => none
 
 def impl_right : BNTree Sequent → Option (BNTree Sequent)
